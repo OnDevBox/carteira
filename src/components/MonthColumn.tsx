@@ -6,11 +6,18 @@ interface MonthColumnProps {
   month: number;
   year: number;
   clients: Client[];
+  onUpdateComment: (clientId: string, comment: string) => void;
 }
 
-export const MonthColumn = ({ month, year: _year, clients }: MonthColumnProps) => {
+export const MonthColumn = ({ month, year: _year, clients, onUpdateComment }: MonthColumnProps) => {
   const monthName = getMonthName(month);
   const colorClass = getMonthColor(month);
+
+  // Calculate total for the month
+  const monthTotal = clients.reduce((sum, client) => sum + (client.total || 0), 0);
+  const formattedTotal = monthTotal > 0 
+    ? (monthTotal / 1000).toFixed(2)
+    : '0.00';
 
   return (
     <div className="flex-shrink-0 w-72 flex flex-col animate-slide-in">
@@ -18,7 +25,7 @@ export const MonthColumn = ({ month, year: _year, clients }: MonthColumnProps) =
       <div className={`${colorClass} rounded-full px-4 py-2 flex items-center justify-between mb-4`}>
         <div className="flex items-center gap-3">
           <span className="bg-black/20 text-white text-xs font-bold px-2 py-1 rounded-full">
-            0.00
+            {formattedTotal}
           </span>
           <span className="text-white font-semibold">
             {monthName}
@@ -37,7 +44,12 @@ export const MonthColumn = ({ month, year: _year, clients }: MonthColumnProps) =
           </div>
         ) : (
           clients.map((client, index) => (
-            <ClientCard key={client.id} client={client} index={index} />
+            <ClientCard 
+              key={client.id} 
+              client={client} 
+              index={index} 
+              onUpdateComment={onUpdateComment}
+            />
           ))
         )}
       </div>
