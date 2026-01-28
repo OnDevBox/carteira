@@ -4,6 +4,7 @@ import { MonthColumn } from './MonthColumn';
 
 interface KanbanBoardProps {
   clients: Client[];
+  onUpdateComment: (clientId: string, comment: string) => void;
 }
 
 interface YearGroup {
@@ -11,7 +12,7 @@ interface YearGroup {
   months: { month: number; year: number; clients: Client[] }[];
 }
 
-export const KanbanBoard = ({ clients }: KanbanBoardProps) => {
+export const KanbanBoard = ({ clients, onUpdateComment }: KanbanBoardProps) => {
   const yearGroups = useMemo(() => {
     // Group clients by year and month
     const grouped = clients.reduce((acc, client) => {
@@ -71,6 +72,7 @@ export const KanbanBoard = ({ clients }: KanbanBoardProps) => {
                   month={column.month}
                   year={column.year}
                   clients={column.clients}
+                  onUpdateComment={onUpdateComment}
                 />
               ))}
             </div>

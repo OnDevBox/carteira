@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { KanbanBoard } from '@/components/KanbanBoard';
 import { Header } from '@/components/Header';
-import { parseExcelFile } from '@/utils/excelParser';
+import { parseExcelFile, generateTemplateFile, exportClientsToExcel } from '@/utils/excelParser';
 import { Client } from '@/types/client';
 import { toast } from 'sonner';
-import { Loader2, Users, FileSpreadsheet } from 'lucide-react';
+import { Loader2, Users, FileSpreadsheet, Download, Upload } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -33,6 +34,27 @@ const Index = () => {
     }
   };
 
+  const handleUpdateComment = (clientId: string, comment: string) => {
+    setClients(prev => 
+      prev.map(client => 
+        client.id === clientId 
+          ? { ...client, comment } 
+          : client
+      )
+    );
+    toast.success('Comentário salvo!');
+  };
+
+  const handleExport = () => {
+    exportClientsToExcel(clients);
+    toast.success('Arquivo exportado com sucesso!');
+  };
+
+  const handleDownloadTemplate = () => {
+    generateTemplateFile();
+    toast.success('Template baixado!');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -47,34 +69,48 @@ const Index = () => {
                   Importe sua planilha de clientes
                 </h2>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Faça upload de um arquivo Excel com o nome do cliente na primeira coluna 
-                  e a data da última compra na segunda coluna.
+                  Faça upload de um arquivo Excel com os dados dos clientes conforme o template.
                 </p>
               </div>
+              
+              <div className="flex justify-center mb-4">
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadTemplate}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Baixar Template
+                </Button>
+              </div>
+              
               <FileUpload onFileSelect={handleFileSelect} isLoading={isLoading} />
               
               {/* Example format */}
-              <div className="mt-6 max-w-md mx-auto">
-                <p className="text-xs text-muted-foreground text-center mb-3">Formato esperado:</p>
-                <div className="bg-card rounded-lg border border-border overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="bg-secondary">
-                        <th className="px-4 py-2 text-left font-semibold text-foreground">Nome</th>
-                        <th className="px-4 py-2 text-left font-semibold text-foreground">Data Última Compra</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-t border-border">
-                        <td className="px-4 py-2 text-muted-foreground">João Silva</td>
-                        <td className="px-4 py-2 text-muted-foreground">15/01/2025</td>
-                      </tr>
-                      <tr className="border-t border-border">
-                        <td className="px-4 py-2 text-muted-foreground">Maria Santos</td>
-                        <td className="px-4 py-2 text-muted-foreground">22/02/2025</td>
-                      </tr>
-                    </tbody>
-                  </table>
+              <div className="mt-6 max-w-2xl mx-auto">
+                <p className="text-xs text-muted-foreground text-center mb-3">Campos do template:</p>
+                <div className="bg-card rounded-lg border border-border p-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs text-muted-foreground">
+                    <span>• Cliente</span>
+                    <span>• Dt. Nascimento</span>
+                    <span>• Dt. Cadastro</span>
+                    <span>• Contato</span>
+                    <span>• Dt. Aniversário Contato</span>
+                    <span>• Tel. Contato</span>
+                    <span>• Email Contato</span>
+                    <span>• CNPJ/CPF</span>
+                    <span>• Atividade</span>
+                    <span>• Cadastro</span>
+                    <span>• Dt. Última Compra</span>
+                    <span>• Telefone</span>
+                    <span>• Celular</span>
+                    <span>• Email</span>
+                    <span>• Status Orc.</span>
+                    <span>• Qtd. Pedidos</span>
+                    <span>• TOTAL</span>
+                    <span>• Ticket Médio</span>
+                    <span>• Comentário</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -88,14 +124,27 @@ const Index = () => {
             </div>
           )}
 
-          {/* Stats */}
+          {/* Stats & Actions */}
           {hasUploaded && !isLoading && (
             <div className="mb-6 animate-fade-in">
-              <div className="flex items-center gap-6 mb-4">
+              <div className="flex flex-wrap items-center gap-4 mb-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Users className="w-4 h-4" />
                   <span className="font-medium">{clients.length} clientes</span>
                 </div>
+                
+                <div className="flex-1" />
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExport}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Exportar Excel
+                </Button>
+                
                 <button
                   onClick={() => {
                     setHasUploaded(false);
@@ -103,8 +152,8 @@ const Index = () => {
                   }}
                   className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
                 >
-                  <FileSpreadsheet className="w-4 h-4" />
-                  Importar nova planilha
+                  <Upload className="w-4 h-4" />
+                  Nova planilha
                 </button>
               </div>
             </div>
@@ -112,7 +161,7 @@ const Index = () => {
 
           {/* Kanban Board */}
           {hasUploaded && !isLoading && (
-            <KanbanBoard clients={clients} />
+            <KanbanBoard clients={clients} onUpdateComment={handleUpdateComment} />
           )}
         </div>
       </main>
