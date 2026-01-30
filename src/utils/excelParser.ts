@@ -66,7 +66,7 @@ export const parseExcelFile = (file: File): Promise<Client[]> => {
           const name = String(row[0] || '').trim();
           if (!name) continue;
           
-          const lastPurchaseDate = parseDate(row[10]); // Dt. Última Compra
+          const lastPurchaseDate = parseDate(row[9]); // Dt. Última Compra
           if (!lastPurchaseDate || isNaN(lastPurchaseDate.getTime())) continue;
           
           clients.push({
