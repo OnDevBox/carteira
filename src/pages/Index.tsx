@@ -100,8 +100,8 @@ const Index = () => {
                     <span>• Email Contato</span>
                     <span>• CNPJ/CPF</span>
                     <span>• Atividade</span>
-                    <span>• Cadastro</span>
                     <span>• Dt. Última Compra</span>
+                    <span>• Cadastro</span>
                     <span>• Telefone</span>
                     <span>• Celular</span>
                     <span>• Email</span>
