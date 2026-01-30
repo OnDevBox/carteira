@@ -40,12 +40,12 @@ export const KanbanBoard = ({ clients, onUpdateComment }: KanbanBoardProps) => {
       return acc;
     }, {} as Record<number, YearGroup>);
 
-    // Sort years and months within each year
+    // Sort years and months within each year (descending order)
     return Object.values(byYear)
-      .sort((a, b) => a.year - b.year)
+      .sort((a, b) => b.year - a.year)
       .map(yearGroup => ({
         ...yearGroup,
-        months: yearGroup.months.sort((a, b) => a.month - b.month),
+        months: yearGroup.months.sort((a, b) => b.month - a.month),
       }));
   }, [clients]);
 

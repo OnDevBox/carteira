@@ -16,15 +16,15 @@ export const MonthColumn = ({ month, year: _year, clients, onUpdateComment }: Mo
   // Calculate total for the month
   const monthTotal = clients.reduce((sum, client) => sum + (client.total || 0), 0);
   const formattedTotal = monthTotal > 0 
-    ? (monthTotal / 1000).toFixed(2)
-    : '0.00';
+    ? `R$ ${monthTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : 'R$ 0,00';
 
   return (
     <div className="flex-shrink-0 w-72 flex flex-col animate-slide-in">
       {/* Header */}
       <div className={`${colorClass} rounded-full px-4 py-2 flex items-center justify-between mb-4`}>
-        <div className="flex items-center gap-3">
-          <span className="bg-black/20 text-white text-xs font-bold px-2 py-1 rounded-full">
+        <div className="flex items-center gap-2">
+          <span className="bg-black/20 text-white text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap">
             {formattedTotal}
           </span>
           <span className="text-white font-semibold">
